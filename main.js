@@ -3,18 +3,22 @@ let ballsWeHave = 5;
 document.querySelector("#pokeballs").value = ballsWeHave;//hidden input value
 document.querySelector("#pokeballsDisplay").innerText = ballsWeHave;//display in HTML
 let pokeballsHolder = document.querySelector("#pokeballs");
-
-document.querySelector("#btn").addEventListener("click", playGame);
-
-function playGame() {
+let rndPokeNo = 1 + Math.round(Math.random() * (248));
+console.log(rndPokeNo);
+async function playGame() {
     let gameStatus = document.querySelector("#gameStart");
+    let pokemon = await fetchPokemon(rndPokeNo);
     switch (gameStatus.value) {
         case "1":
             document.querySelector("#btn-container").innerHTML = '<button class="btn btn-info" id="btn">Pagauk pokemona!</button>';
             document.querySelector("#pokemon-container").innerHTML = '<div id="pokemon"></div>';
             gameStatus.value = 2;
+          
+            document.querySelector("#pokemon").innerHTML = '<img src="' + pokemon.photo + '" alt="">';
+            resetButton();
             break;
         case "2":
+        
             pokeballsHolder.value = pokeballsHolder.value - 1;
             document.querySelector("#pokeballsDisplay").innerText = pokeballsHolder.value;
             if (Math.random() < 0.5) {// 50% tikimybė pagauti
@@ -44,12 +48,29 @@ function playGame() {
     }
     resetButton();
 }
-
+document.querySelector("#btn").addEventListener("click", playGame);
 function resetButton() {
-    if (document.querySelector("#btn") != null) {
-        document.querySelector("#btn").removeEventListener("click", playGame);
-        document.querySelector("#btn").addEventListener("click", playGame);
+    const btn = document.querySelector("#btn");
+    if (btn) {
+        btn.removeEventListener("click", playGame);
+        btn.addEventListener("click", playGame);
     }
 }
+
+async function fetchPokemon(rndPokeNo) {
+    const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + rndPokeNo);
+    const data = await response.json();
+    return {
+         photo: data.sprites.front_default,
+         stats: {
+            hp : Math.round(data.stats[0].base_stat * (0.7 + Math.random() * (1.3 - 0.7))),
+            attack : Math.round(data.stats[1].base_stat * (0.7 + Math.random() * (1.3 - 0.7))),
+            defence : Math.round(data.stats[2].base_stat * (0.7 + Math.random() * (1.3 - 0.7))),
+
+         } 
+        };
+}
+
+document.querySelector("#btn").addEventListener("click", playGame);
 
 
