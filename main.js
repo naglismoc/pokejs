@@ -8,6 +8,7 @@ console.log(rndPokeNo);
 async function playGame() {
     let gameStatus = document.querySelector("#gameStart");
     let pokemon = await fetchPokemon(rndPokeNo);
+    console.log(pokemon);
     switch (gameStatus.value) {
         case "1":
             document.querySelector("#btn-container").innerHTML = '<button class="btn btn-info" id="btn">Pagauk pokemona!</button>';
@@ -38,7 +39,7 @@ async function playGame() {
             }
             break;
         case "3":
-            document.querySelector("#pokemon").innerHTML = '<h1>Pokemonas</h1>';
+            document.querySelector("#pokemon").innerHTML = '<h1>' + pokemon.stats.hp + '</h1>';
             document.querySelector("#btn-container").innerHTML = "";
             gameStatus.value = 3;
             break;
@@ -61,12 +62,12 @@ async function fetchPokemon(rndPokeNo) {
     const response = await fetch("https://pokeapi.co/api/v2/pokemon/" + rndPokeNo);
     const data = await response.json();
     return {
+        name: data.name,
          photo: data.sprites.front_default,
          stats: {
             hp : Math.round(data.stats[0].base_stat * (0.7 + Math.random() * (1.3 - 0.7))),
             attack : Math.round(data.stats[1].base_stat * (0.7 + Math.random() * (1.3 - 0.7))),
             defence : Math.round(data.stats[2].base_stat * (0.7 + Math.random() * (1.3 - 0.7))),
-
          } 
         };
 }
